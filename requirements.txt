@@ -1,0 +1,12 @@
+numpy>=1.20.0
+matplotlib>=3.5.0
+imageio>=2.20.0
+scipy>=1.8.0
+
+# Optional dependencies
+cupy-cuda12x>=12.0.0; sys_platform == "linux" and platform_machine == "x86_64"  # CUDA 12.x support
+open3d>=0.15.0  # For 3D visualization
+
+# Development dependencies
+pytest>=7.0.0
+pytest-cov>=3.0.0

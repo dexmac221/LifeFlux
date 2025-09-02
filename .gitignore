@@ -1,0 +1,111 @@
+# Ignore compiled Python files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.env
+.venv
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project-specific
+# Output files
+*.gif
+*.png
+*.jpg
+*.jpeg
+*.avi
+*.mp4
+*.ply
+*.obj
+*.stl
+
+# Test outputs
+test_output/
+test_cuda/
+results/
+output/
+exports/
+/temp/
+/tmp/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# pytest cache
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# MyPy cache
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Profiling data
+*.prof
+*.profile
+
+# Log files
+*.log
+
+# CUDA cache
+.nv_fatb
+*.cubin
+*.ptx
+
+# Documentation builds
+docs/_build/
+site/
+
+# Local configuration
+.env.local
+config.local.json
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Temporary files created by the system
+.tmp/
+*.tmp
