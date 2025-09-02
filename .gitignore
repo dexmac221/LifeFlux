@@ -49,7 +49,9 @@ Thumbs.db
 # Project-specific
 # Output files
 *.gif
+!assets/*.gif
 *.png
+!assets/*.png
 *.jpg
 *.jpeg
 *.avi
