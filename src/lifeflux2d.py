@@ -374,7 +374,124 @@ class LifeFlux2DSimulator:
         iio.imwrite(os.path.join(self.out_dir, "lifeflux2d_cells.gif"), self.cells_frames, duration=0.06, loop=0)
         iio.imwrite(os.path.join(self.out_dir, "lifeflux2d_dye.gif"), self.dye_frames, duration=0.06, loop=0)
         iio.imwrite(os.path.join(self.out_dir, "lifeflux2d_combo.gif"), self.combo_frames, duration=0.06, loop=0)
+        
+        # Create side-by-side GIFs if both cells and dye frames exist
+        if self.use_life2 and len(self.cells_frames) == len(self.dye_frames):
+            self.create_side_by_side_gif()
+            
         print("GIFs saved successfully!")
+    
+    def create_side_by_side_gif(self):
+        """Create a side-by-side GIF with cells on left and flow visualization on right"""
+        print("Creating side-by-side demo GIF...")
+        
+        side_by_side_frames = []
+        for cell_frame, dye_frame in zip(self.cells_frames, self.dye_frames):
+            # Ensure both frames have the same height
+            h1, w1 = cell_frame.shape[:2]
+            h2, w2 = dye_frame.shape[:2]
+            
+            # Resize if needed to match height
+            if h1 != h2:
+                target_height = min(h1, h2)
+                if len(cell_frame.shape) == 3:
+                    cell_frame = cell_frame[:target_height, :, :]
+                else:
+                    cell_frame = cell_frame[:target_height, :]
+                if len(dye_frame.shape) == 3:
+                    dye_frame = dye_frame[:target_height, :, :]
+                else:
+                    dye_frame = dye_frame[:target_height, :]
+            
+            # Ensure both are RGB (3 channels)
+            if len(cell_frame.shape) == 2:
+                cell_frame = np.stack([cell_frame] * 3, axis=-1)
+            if len(dye_frame.shape) == 2:
+                dye_frame = np.stack([dye_frame] * 3, axis=-1)
+            
+            # Create side-by-side frame with a small separator
+            separator_width = 4
+            separator = np.ones((cell_frame.shape[0], separator_width, 3), dtype=np.uint8) * 128
+            
+            # Concatenate horizontally: cells | separator | dye
+            combined_frame = np.concatenate([cell_frame, separator, dye_frame], axis=1)
+            side_by_side_frames.append(combined_frame)
+        
+        # Save the side-by-side GIF
+        side_by_side_path = os.path.join(self.out_dir, "lifeflux2d_side_by_side.gif")
+        iio.imwrite(side_by_side_path, side_by_side_frames, duration=0.08, loop=0)
+        print(f"Side-by-side GIF saved: {side_by_side_path}")
+        
+        # Also create a demo version with title overlay for README
+        self.create_demo_gif_with_titles(side_by_side_frames)
+    
+    def create_demo_gif_with_titles(self, side_by_side_frames):
+        """Create a demo GIF with titles for the README"""
+        try:
+            import matplotlib.pyplot as plt
+            import matplotlib.patches as patches
+            from matplotlib import font_manager
+            
+            demo_frames = []
+            
+            # Add title overlay to each frame
+            for i, frame in enumerate(side_by_side_frames):
+                fig, ax = plt.subplots(1, 1, figsize=(12, 6), dpi=100)
+                ax.imshow(frame)
+                ax.set_xticks([])
+                ax.set_yticks([])
+                
+                # Add titles
+                frame_height, frame_width = frame.shape[:2]
+                cell_width = (frame_width - 4) // 2  # Account for separator
+                
+                # Left title: "Cellular Life"
+                ax.text(cell_width//2, -20, 'Cellular Life', 
+                       fontsize=16, fontweight='bold', color='white',
+                       ha='center', va='bottom',
+                       bbox=dict(boxstyle="round,pad=0.3", facecolor='black', alpha=0.7))
+                
+                # Right title: "Flow Dynamics"
+                ax.text(cell_width + 4 + cell_width//2, -20, 'Flow Dynamics', 
+                       fontsize=16, fontweight='bold', color='white',
+                       ha='center', va='bottom',
+                       bbox=dict(boxstyle="round,pad=0.3", facecolor='black', alpha=0.7))
+                
+                # Add step counter
+                ax.text(frame_width//2, frame_height + 10, f'Step: {i+1}', 
+                       fontsize=12, color='white', ha='center', va='top',
+                       bbox=dict(boxstyle="round,pad=0.2", facecolor='blue', alpha=0.7))
+                
+                # Add project title at the top
+                ax.text(frame_width//2, -50, 'LifeFlux - Advanced Cellular Automaton', 
+                       fontsize=20, fontweight='bold', color='cyan',
+                       ha='center', va='bottom',
+                       bbox=dict(boxstyle="round,pad=0.5", facecolor='darkblue', alpha=0.8))
+                
+                ax.set_xlim(0, frame_width)
+                ax.set_ylim(frame_height + 20, -60)
+                
+                # Convert matplotlib figure to numpy array
+                fig.canvas.draw()
+                # Use buffer_rgba instead of tostring_rgb for compatibility
+                buf = np.frombuffer(fig.canvas.buffer_rgba(), dtype=np.uint8)
+                buf = buf.reshape(fig.canvas.get_width_height()[::-1] + (4,))
+                # Convert RGBA to RGB
+                buf_rgb = buf[:, :, :3]
+                demo_frames.append(buf_rgb)
+                plt.close(fig)
+            
+            # Save demo GIF
+            demo_path = os.path.join(self.out_dir, "lifeflux2d_demo.gif")
+            iio.imwrite(demo_path, demo_frames, duration=0.1, loop=0)
+            print(f"Demo GIF with titles saved: {demo_path}")
+            
+        except Exception as e:
+            print(f"Could not create demo GIF with titles: {e}")
+            # Fall back to simple version
+            demo_path = os.path.join(self.out_dir, "lifeflux2d_demo.gif")
+            iio.imwrite(demo_path, side_by_side_frames, duration=0.1, loop=0)
+            print(f"Simple demo GIF saved: {demo_path}")
 
 
 class RealtimeViewer:
@@ -649,6 +766,7 @@ def run_batch_mode():
     p.add_argument("--phi-influence", type=float, default=0.0, help="Field influence on Life rules (0.0=pure Conway, 0.2=gentle bias, 1.0=full Life2)")
     p.add_argument("--colored-dye", action="store_true", default=True, help="Use colored dye field (default: True)")
     p.add_argument("--grayscale-dye", action="store_true", help="Use grayscale dye field instead of colored")
+    p.add_argument("--demo", action="store_true", help="Generate optimized demo GIFs with enhanced side-by-side visualization")
     args = p.parse_args()
     
     # Parse matrix dimensions if provided
@@ -660,6 +778,19 @@ def run_batch_mode():
         except ValueError:
             print(f"Invalid matrix format: {args.matrix}. Use WIDTHxHEIGHT (e.g., 100x100)")
             return
+    
+    # Apply demo mode optimizations if requested
+    if args.demo:
+        # Override settings for better demo visuals
+        if args.life_mode == "life2":
+            args.phi_influence = max(args.phi_influence, 0.3)  # Ensure visible field effects
+            args.flow_gain = max(args.flow_gain, 8.0)          # Ensure visible flow
+            args.colored_dye = True                             # Force colored dye for demos
+        
+        print("🎬 Demo mode: Optimizing settings for visual appeal")
+        print(f"   Phi influence: {args.phi_influence}")
+        print(f"   Flow gain: {args.flow_gain}")
+        print(f"   Colored dye: {not args.grayscale_dye}")
     
     simulator = LifeFlux2DSimulator(
         width=width, height=height, seed=args.seed,

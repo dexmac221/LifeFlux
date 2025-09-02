@@ -17,6 +17,41 @@
 - **📊 Convergence Analysis**: Automatic detection of pattern stability
 - **🎛️ Tunable Chaos**: Adjustable field influence from pure Conway to full chaos
 
+## 🎬 Live Demo
+
+### LifeFlux in Action: Cellular Life + Flow Dynamics
+Experience the mesmerizing interplay between cellular automaton evolution and flow field dynamics:
+
+<div align="center">
+
+![LifeFlux Demo](assets/lifeflux_readme_demo_fast.gif)
+
+*Left: Cellular Life Evolution | Right: Flow Field Visualization*
+
+</div>
+
+### Conway's Life vs. Life 2.0 Comparison
+See how traditional Conway's Game of Life compares to our enhanced Life 2.0 with potential fields:
+
+<div align="center">
+
+![Conway vs Life2.0](assets/conway_vs_life2_comparison.gif)
+
+*Top Row: Conway's Life (left) vs Life 2.0 (right) | Bottom: Flow Field Dynamics*
+
+</div>
+
+### Parameter Exploration
+Watch how different `phi_influence` values affect system behavior (φ = 0.0, 0.2, 0.5, 0.8):
+
+<div align="center">
+
+![Parameter Sweep](assets/parameter_sweep_demo.gif)
+
+*Each section shows 40 steps with different field influence values*
+
+</div>
+
 ## 🚀 Quick Start
 
 ### Installation
@@ -56,14 +91,29 @@ python src/lifeflux3d.py --size 32 --life-mode life3d
 
 # Generate GIF animations
 python src/lifeflux2d.py --matrix 120x120 --steps 200 --out-dir results
+
+# Create side-by-side demo (Life + Flow) - optimized for showcase
+python src/lifeflux2d.py --matrix 100x100 --steps 100 --life-mode life2 --demo --out-dir demo
 ```
 
 ## 🎨 Visual Gallery
 
 ### 2D Flow Patterns
+
+<div align="center">
+
+**Pure Conway's Game of Life**
+![Conway's Life](assets/conway_life_demo.gif)
+
+**Vortex Formation in Life 2.0**
+![Vortex Formation](assets/vortex_formation_demo.gif)
+
+</div>
+
 - **Colored Dye Field**: Flow direction mapped to hue, intensity to saturation
 - **Vortex Formation**: Self-organizing spiral patterns and attractors
 - **Probability Collapse**: Watch chaos emerge from simple rules
+- **High-Resolution Demos**: Available in multiple sizes for different viewing needs
 
 ### 3D Volumetric Rendering  
 - **26-Neighbor Rules**: True 3D cellular automaton
@@ -89,6 +139,20 @@ python src/lifeflux2d.py --matrix 120x120 --steps 200 --out-dir results
 - **CUDA Acceleration**: CuPy-based GPU computing
 - **Flow Dynamics**: Semi-Lagrangian advection scheme
 - **Color Science**: Vectorized HSV→RGB conversion
+
+### 🎬 GIF Recording & Export
+- **Multi-format Output**: Separate GIFs for cells, dye field, and combined view
+- **Side-by-side Visualization**: Automatic generation of split-screen demos
+- **Demo Mode**: Optimized settings for showcase-quality recordings
+- **Scalable Resolution**: Display scaling from 1x to 4x for different needs
+- **Professional Quality**: High-resolution exports suitable for presentations
+
+**Generated Files:**
+- `lifeflux2d_cells.gif` - Pure cellular evolution
+- `lifeflux2d_dye.gif` - Flow field visualization  
+- `lifeflux2d_combo.gif` - Overlay visualization
+- `lifeflux2d_side_by_side.gif` - Split-screen demo
+- `lifeflux2d_demo.gif` - Enhanced demo with titles
 
 ## 📋 System Requirements
 
